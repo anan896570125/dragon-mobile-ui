@@ -1,7 +1,6 @@
 
 import React, { Component, PropTypes, cloneElement, Children } from 'react';
 import classnames from 'classnames';
-// import addEndEventListener from '../utils/transitionEvents';
 
 class Swipe extends Component {
 

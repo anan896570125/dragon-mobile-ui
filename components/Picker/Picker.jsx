@@ -145,8 +145,8 @@ class Picker extends Component {
     });
 
     const cls = classnames({
-      'ui-picker' : true,
-      'disabled'    : 'disabled' in props || isDisabled
+      'ui-picker': true,
+      'disabled' : 'disabled' in props || isDisabled
     });
 
     return (
@@ -154,8 +154,7 @@ class Picker extends Component {
         style={{height: height}}
         onTouchStart={(event) => this.onTouchStart(event)}
         onTouchMove={(event) => this.onTouchMove(event)}
-        onTouchEnd={(event) => this.onTouchEnd(event)}
-        >
+        onTouchEnd={(event) => this.onTouchEnd(event)}>
         <ul ref="picker">
           {options}
         </ul>

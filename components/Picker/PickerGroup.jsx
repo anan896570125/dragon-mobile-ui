@@ -66,31 +66,38 @@ class PickerGroup extends Component {
 
   // 切换显示状态
   toggle() {
-    this.setState({
-      visible: !this.state.visible
-    });
+    let visible = !this.state.visible;
+    this.setState({ visible });
+    this.getOptions(this.props.dataSource, 0, true);
+    this.props.onOpen(visible);
   }
 
   // 获取选择器组
-  getOptions(dataSource, level) {
+  getOptions(dataSource, level, isSubmit) {
     const { valueMember, displayMember } = this.props;
 
     let pickers = this.pickers || [],
         selected = dataSource.filter(item => item[valueMember] == this.state.value[level])[0] || dataSource[0] || {};
 
     if (selected.children && selected.children.length > 0) {
-      pickers = this.getOptions(selected.children, level + 1);
+      pickers = this.getOptions(selected.children, level + 1, isSubmit);
     }
 
     pickers.unshift(<Picker key={level} valueMember={valueMember} displayMember={displayMember} dataSource={dataSource} value={selected[valueMember]} onChange={(value) => {
-      this.onpickerChange(dataSource, level, value);
+      this.onPickerChange(dataSource, level, value);
     }} />);
+
+    // 点击确定
+    if (isSubmit) {
+      let value = this.state.value;
+      value[level] = selected[valueMember];
+    }
 
     return pickers;
   }
 
   // 选择器选值
-  onpickerChange(dataSource, level, value) {
+  onPickerChange(dataSource, level, value) {
     const { valueMember } = this.props;
 
     let values = this.state.value.concat(),
@@ -110,6 +117,8 @@ class PickerGroup extends Component {
     this.setState({
       value: values
     });
+
+    this.props.onChange(values)
   }
 
   getSelected(d, val) {
@@ -131,6 +140,7 @@ class PickerGroup extends Component {
     this.setState({
       value
     });
+
     onOk && onOk(value);
   }
 }
@@ -140,6 +150,7 @@ PickerGroup.propTypes = {
   title         : PropTypes.string,
   cancelText    : PropTypes.string,
   okText        : PropTypes.string,
+  onOpen        : PropTypes.func,
   onMaskClick   : PropTypes.func,
   valueMember   : PropTypes.string,
   displayMember : PropTypes.string,
@@ -149,6 +160,7 @@ PickerGroup.defaultProps = {
   visible       : false,
   cancelText    : '取消',
   okText        : '确定',
+  onOpen        : () => {},
   onMaskClick   : () => {},
   valueMember   : 'value',
   displayMember : 'label',
