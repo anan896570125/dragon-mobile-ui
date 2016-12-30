@@ -22,11 +22,11 @@ class CellPage extends Component {
   }
 
   componentDidMount() {
-    setInterval(() => {
+    // setInterval(() => {
       this.setState({
         sex: 'F'
       })
-    }, 1000)
+    // }, 1000)
   }
 
   render() {
@@ -149,14 +149,8 @@ class CellPage extends Component {
                 value={this.state.pickerValue}
                 valueMember="label"
                 displayMember="label"
-                format=""
-                onOpen={() => {
-                  this.setState({ picker: true })
-                }}
+                format="" 
                 onChange={(values) => {
-                  this.setState({
-                    pickerValue: values,
-                  })
                   console.log(values)
                 }}
                 onOk={(value) => {

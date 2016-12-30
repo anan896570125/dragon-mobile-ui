@@ -8,10 +8,21 @@ class PickerGroup extends Component {
 
   constructor(props) {
     super(props);
+    this.pickers = [];
     this.state = {
+      pickers: [],
       visible: props.visible || false,
-      value: props.value || props.defaultValue || [],
+      value  : props.value || props.defaultValue || [],
     };
+  }
+
+  componentWillMount() {
+    this.getOptions(this.props.dataSource, 0);
+    console.log(this.pickers)
+
+    this.setState({
+      pickers: this.pickers
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -23,11 +34,10 @@ class PickerGroup extends Component {
 
   render () {
     const { visible, dataSource, value, format, valueMember, placeholder, className, title, cancelText, okText, onMaskClick, onCancel, onOk, onClick, children, ...others } = this.props;
-    const pickers = this.getOptions(dataSource, 0);
     const classes = classnames({
       'ui-picker-container' : true,
       'ui-picker-hidden'    : !this.state.visible,
-      [className]             : !!className,
+      [className]           : !!className,
     });
 
     const inputCls = classnames({
@@ -49,7 +59,7 @@ class PickerGroup extends Component {
               <div className="ui-picker-mask-bottom">
                 <div className="ui-picker-body">
                   <div className="ui-picker-selected"></div>
-                  {pickers}
+                  {this.state.pickers}
                 </div>
               </div>
             </div>
@@ -68,19 +78,17 @@ class PickerGroup extends Component {
   toggle() {
     let visible = !this.state.visible;
     this.setState({ visible });
-    this.getOptions(this.props.dataSource, 0, true);
-    this.props.onOpen(visible);
   }
 
   // 获取选择器组
-  getOptions(dataSource, level, isSubmit) {
+  getOptions(dataSource, level) {
     const { valueMember, displayMember } = this.props;
 
-    let pickers = this.pickers || [],
+    let pickers = this.pickers,
         selected = dataSource.filter(item => item[valueMember] == this.state.value[level])[0] || dataSource[0] || {};
-
+    
     if (selected.children && selected.children.length > 0) {
-      pickers = this.getOptions(selected.children, level + 1, isSubmit);
+      this.getOptions(selected.children, level + 1);
     }
 
     pickers.unshift(<Picker key={level} valueMember={valueMember} displayMember={displayMember} dataSource={dataSource} value={selected[valueMember]} onChange={(value) => {
@@ -88,12 +96,10 @@ class PickerGroup extends Component {
     }} />);
 
     // 点击确定
-    if (isSubmit) {
-      let value = this.state.value;
-      value[level] = selected[valueMember];
-    }
-
-    return pickers;
+    // if (isSubmit) {
+    //   let value = this.state.value;
+    //   value[level] = selected[valueMember];
+    // }
   }
 
   // 选择器选值
@@ -121,10 +127,10 @@ class PickerGroup extends Component {
     this.props.onChange(values)
   }
 
-  getSelected(d, val) {
-    let children = d.filter(item => item[this.props.valueMember] == val)[0].children;
-    return children && children[0]
-  }
+  // getSelected(d, val) {
+  //   let children = d.filter(item => item[this.props.valueMember] == val)[0].children;
+  //   return children && children[0]
+  // }
 
   // 取消
   onCancel() {
@@ -150,7 +156,6 @@ PickerGroup.propTypes = {
   title         : PropTypes.string,
   cancelText    : PropTypes.string,
   okText        : PropTypes.string,
-  onOpen        : PropTypes.func,
   onMaskClick   : PropTypes.func,
   valueMember   : PropTypes.string,
   displayMember : PropTypes.string,
@@ -160,7 +165,6 @@ PickerGroup.defaultProps = {
   visible       : false,
   cancelText    : '取消',
   okText        : '确定',
-  onOpen        : () => {},
   onMaskClick   : () => {},
   valueMember   : 'value',
   displayMember : 'label',
